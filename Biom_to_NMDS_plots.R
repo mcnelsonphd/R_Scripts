@@ -20,7 +20,7 @@ require(vegan)
 require(ggplot2)
 require(biom)
 require(grid) # Required if putting on env. fit vectors to get arrowheads a-la https://oliviarata.wordpress.com/2014/04/17/ordinations-in-ggplot2/
-# Env fitting not currently done.
+## NOTE: Env fitting not currently done.
 # Read in the biom file, which should have meta-data attached to it.
 mybiom <- read_biom("PATH_TO_BIOM_FILE")
 # Get some basic info on the file
@@ -30,9 +30,13 @@ tmp <- as(biom_data(mybiom), "matrix")
 mybiom.data <- as.data.frame(t(tmp))
 rm(tmp)
 # Create a sample metadata matrix for easy referencing
-mybiom.meta <- sample_metadata(mybiom)
-# Print out the names of the meta-data fields
-colnames(mybiom.meta)
+mybiom.meta_tmp <- sample_metadata(mybiom)
+## NOTE!!!! This method apparently pulls all of the meta-data into a dataframe as characters.
+## If we have numeric or factor data, then that data needs to be coaxed into the correct form for many analyses to properly work (e.g. Ordisurf or CCA).
+## This must be done manually as follows: mybiom.meta <- transform(mybiom.meta_tmp, Temperature = as.numeric(Temperature), Treatment = as.factor(Treatment), etc...)
+
+# Print out the names of the meta-data fields, along with their data type
+sapply(mybiom.meta, mode)
 # Now lets ask the user which meta-data field they want to use for grouping
 #while(n<1){  This assumes script is being run interactively, probably want to do this programmatically instead.
 #  meta <- readline("Please type the name of the meta-data you wish to use for sample grouping: ")
